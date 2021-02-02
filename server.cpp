@@ -96,7 +96,7 @@ void broadcast(char message[30]) {
     for (int i = 0; i < MAX_CLIENTS; i++)
     {
         if ( players[i].socket != 0 ) {
-            if ( send(players[i].socket, message, strlen(message), 0) != strlen(message) ) {
+            if ( (unsigned)send(players[i].socket, message, strlen(message), 0) != strlen(message) ) {
                 perror("send");
             }
         }
@@ -111,7 +111,7 @@ void countDownFinished() {
         for (int i = 0; i < MAX_CLIENTS; i++) {
             if ( players[i].socket != 0 ) {
                 char countDownFinished[30] = "countDownFinished,0;0;0";
-                if( send(players[i].socket, countDownFinished, strlen(countDownFinished), 0) != strlen(countDownFinished) ) {
+                if( (unsigned)send(players[i].socket, countDownFinished, strlen(countDownFinished), 0) != strlen(countDownFinished) ) {
                     perror("send");
                 }
             }
@@ -133,7 +133,7 @@ void countDownFinished() {
             sprintf(c, "%d", game.cardOnBoard);
             strcat(countDownFinished, c);
 
-            if( send(players[i].socket, countDownFinished, strlen(countDownFinished), 0) != strlen(countDownFinished) ) {
+            if( (unsigned)send(players[i].socket, countDownFinished, strlen(countDownFinished), 0) != strlen(countDownFinished) ) {
                 perror("send");
             }
         }
@@ -159,7 +159,7 @@ void playerCount(int numberOfPlayers) {
     }
     for (int i = 0; i < MAX_CLIENTS; i++) {
         if ( players[i].socket != 0 ) {
-            if( send(players[i].socket, playerCount, strlen(playerCount), 0) != strlen(playerCount) ) {
+            if( (unsigned)send(players[i].socket, playerCount, strlen(playerCount), 0) != strlen(playerCount) ) {
                 perror("send");
             }
         }
@@ -213,7 +213,7 @@ void check(int i, int max_clients, char *message) {
     }
     printf("%s has won\n", players[i].username);
     char finish[30] = "finish,1;0";
-    if ( send( players[i].socket, finish, strlen(finish), 0) != strlen(finish) ) {
+    if ( (unsigned)send( players[i].socket, finish, strlen(finish), 0) != strlen(finish) ) {
         perror("send");
     }
     for (int k = 0; k < max_clients; k++) {
@@ -221,7 +221,7 @@ void check(int i, int max_clients, char *message) {
             // printf("players[k].socket != 0 && players[i].socket[%d] != players[k].socket[%d]\n", players[i].socket, players[k].socket);
             char finish[30] = "finish,0;";
             strcat(finish, players[i].username);
-            if ( send( players[k].socket, finish, strlen(finish), 0) != strlen(finish) ) {
+            if ( (unsigned)send( players[k].socket, finish, strlen(finish), 0) != strlen(finish) ) {
                 perror("send");
             }
             printf("%s\n", finish);
@@ -369,21 +369,21 @@ int main(int argc , char *argv[])
                 if ( players[i].socket != 0 && strcmp(username, players[i].username ) == 0 ) {
                     printf("User tried to log in with duplicate username\n");
                     char duplicate[30] = "duplicate,";
-                    if ( send(new_socket, duplicate, strlen(duplicate), 0) != strlen(duplicate) ) {
+                    if ( (unsigned)send(new_socket, duplicate, strlen(duplicate), 0) != strlen(duplicate) ) {
                         perror("send");
                     }
                     goto cnt;
                 }
             }
 
-            if (game.on) {
-                int max=7;
-                for (i = 0; i < max_clients; i++) {
-                    if ( players[i].socket != 0 ) {
-                        if (players[i])
-                    }
-                }
-            }
+            // if (game.on) {
+            //     int max=7;
+            //     for (i = 0; i < max_clients; i++) {
+            //         if ( players[i].socket != 0 ) {
+            //             if (players[i])
+            //         }
+            //     }
+            // }
 
             //
             //
@@ -395,7 +395,7 @@ int main(int argc , char *argv[])
             //
             char loginSuccess[30] = "loginSuccess";
             //send new connection greeting message
-            if( send(new_socket, loginSuccess, strlen(loginSuccess), 0) != strlen(loginSuccess) )
+            if( (unsigned)send(new_socket, loginSuccess, strlen(loginSuccess), 0) != strlen(loginSuccess) )
             {
                 perror("send");
             }
