@@ -3,6 +3,7 @@
 
 #include <QObject>
 #include <QTcpSocket>
+
 class QHostAddress;
 class QJsonDocument;
 class ChatClient : public QObject
@@ -29,12 +30,15 @@ signals:
     void userJoined(const QString &username);
     void playerCount(const int &count, const QJsonObject &players);
     void countDown(const int &timer);
-    void countDownFinished(const bool &success, const QJsonObject &card, const QJsonObject &boardCard);
+    void countDownFinished(const bool &success, const int &card, const int &boardCard);
+    void loginDuplicate();
+    void finishRound(const int isWin, const QString &username);
     void userLeft(const QString &username);
 private:
     QTcpSocket *m_clientSocket;
     bool m_loggedIn;
     void jsonReceived(const QJsonObject &doc);
+    void messageType(const QString &data);
 };
 
 #endif // CHATCLIENT_H

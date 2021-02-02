@@ -191,185 +191,185 @@ void ChatServer::jsonFromLoggedOut(ServerWorker *sender, const QJsonObject &docO
                 sender->setPoints(worker->points());
             }
         }
-        int a = cards->stash[cards->cardOnBoard];
-        QJsonObject boardCard;
-        boardCard[QStringLiteral("A")] = cards->cards[a][0];
-        boardCard[QStringLiteral("B")] = cards->cards[a][1];
-        boardCard[QStringLiteral("C")] = cards->cards[a][2];
-        boardCard[QStringLiteral("D")] = cards->cards[a][3];
-        boardCard[QStringLiteral("E")] = cards->cards[a][4];
-        boardCard[QStringLiteral("F")] = cards->cards[a][5];
-        boardCard[QStringLiteral("G")] = cards->cards[a][6];
-        boardCard[QStringLiteral("H")] = cards->cards[a][7];
+//        int a = cards->stash[cards->cardOnBoard];
+//        QJsonObject boardCard;
+//        boardCard[QStringLiteral("A")] = cards->cards[a][0];
+//        boardCard[QStringLiteral("B")] = cards->cards[a][1];
+//        boardCard[QStringLiteral("C")] = cards->cards[a][2];
+//        boardCard[QStringLiteral("D")] = cards->cards[a][3];
+//        boardCard[QStringLiteral("E")] = cards->cards[a][4];
+//        boardCard[QStringLiteral("F")] = cards->cards[a][5];
+//        boardCard[QStringLiteral("G")] = cards->cards[a][6];
+//        boardCard[QStringLiteral("H")] = cards->cards[a][7];
 
-        int b = cards->stash[cards->cardIterator];
-        QJsonObject card;
-        card[QStringLiteral("A")] = cards->cards[b][0];
-        card[QStringLiteral("B")] = cards->cards[b][1];
-        card[QStringLiteral("C")] = cards->cards[b][2];
-        card[QStringLiteral("D")] = cards->cards[b][3];
-        card[QStringLiteral("E")] = cards->cards[b][4];
-        card[QStringLiteral("F")] = cards->cards[b][5];
-        card[QStringLiteral("G")] = cards->cards[b][6];
-        card[QStringLiteral("H")] = cards->cards[b][7];
-        sender->setCardOnHand(cards->cardIterator);
-        cards->cardIterator++;
-        QJsonObject message;
-        message[QStringLiteral("type")] = QStringLiteral("countDownFinished");
-        message[QStringLiteral("success")] = true;
-        message[QStringLiteral("card")] = card;
-        message[QStringLiteral("boardCard")] = boardCard;
-        sendJson(sender, message);
-        emit logMessage(QLatin1String("Starting the game"));
-        QJsonObject secondMessage;
-        message[QStringLiteral("type")] = QStringLiteral("message");
-        QString line = "Card on board: ";
-        for (int i=0; i<8; i++) {
-            line += QString::number(cards->cards[a][i])+" ";
-        }
-        message[QStringLiteral("text")] = line;
-        message[QStringLiteral("sender")] = "Server";
-        sendJson(sender, message);
-        line = "Card in hand: ";
-        for (int i=0; i<8; i++) {
-            line += QString::number(cards->cards[b][i])+" ";
-        }
-        message[QStringLiteral("text")] = line;
-        message[QStringLiteral("sender")] = "Server";
-        sendJson(sender, message);
+//        int b = cards->stash[cards->cardIterator];
+//        QJsonObject card;
+//        card[QStringLiteral("A")] = cards->cards[b][0];
+//        card[QStringLiteral("B")] = cards->cards[b][1];
+//        card[QStringLiteral("C")] = cards->cards[b][2];
+//        card[QStringLiteral("D")] = cards->cards[b][3];
+//        card[QStringLiteral("E")] = cards->cards[b][4];
+//        card[QStringLiteral("F")] = cards->cards[b][5];
+//        card[QStringLiteral("G")] = cards->cards[b][6];
+//        card[QStringLiteral("H")] = cards->cards[b][7];
+//        sender->setCardOnHand(cards->cardIterator);
+//        cards->cardIterator++;
+//        QJsonObject message;
+//        message[QStringLiteral("type")] = QStringLiteral("countDownFinished");
+//        message[QStringLiteral("success")] = true;
+//        message[QStringLiteral("card")] = card;
+//        message[QStringLiteral("boardCard")] = boardCard;
+//        sendJson(sender, message);
+//        emit logMessage(QLatin1String("Starting the game"));
+//        QJsonObject secondMessage;
+//        message[QStringLiteral("type")] = QStringLiteral("message");
+//        QString line = "Card on board: ";
+//        for (int i=0; i<8; i++) {
+//            line += QString::number(cards->cards[a][i])+" ";
+//        }
+//        message[QStringLiteral("text")] = line;
+//        message[QStringLiteral("sender")] = "Server";
+//        sendJson(sender, message);
+//        line = "Card in hand: ";
+//        for (int i=0; i<8; i++) {
+//            line += QString::number(cards->cards[b][i])+" ";
+//        }
+//        message[QStringLiteral("text")] = line;
+//        message[QStringLiteral("sender")] = "Server";
+//        sendJson(sender, message);
     }
 }
 
 void ChatServer::pushCardOnBoard(ServerWorker *sender)
 {
-    cards->cardOnBoard = sender->cardOnHand();
-    int a = cards->stash[cards->cardOnBoard];
-    QJsonObject boardCard;
-    boardCard[QStringLiteral("A")] = cards->cards[a][0];
-    boardCard[QStringLiteral("B")] = cards->cards[a][1];
-    boardCard[QStringLiteral("C")] = cards->cards[a][2];
-    boardCard[QStringLiteral("D")] = cards->cards[a][3];
-    boardCard[QStringLiteral("E")] = cards->cards[a][4];
-    boardCard[QStringLiteral("F")] = cards->cards[a][5];
-    boardCard[QStringLiteral("G")] = cards->cards[a][6];
-    boardCard[QStringLiteral("H")] = cards->cards[a][7];
+//    cards->cardOnBoard = sender->cardOnHand();
+//    int a = cards->stash[cards->cardOnBoard];
+//    QJsonObject boardCard;
+//    boardCard[QStringLiteral("A")] = cards->cards[a][0];
+//    boardCard[QStringLiteral("B")] = cards->cards[a][1];
+//    boardCard[QStringLiteral("C")] = cards->cards[a][2];
+//    boardCard[QStringLiteral("D")] = cards->cards[a][3];
+//    boardCard[QStringLiteral("E")] = cards->cards[a][4];
+//    boardCard[QStringLiteral("F")] = cards->cards[a][5];
+//    boardCard[QStringLiteral("G")] = cards->cards[a][6];
+//    boardCard[QStringLiteral("H")] = cards->cards[a][7];
 
-    if (sender->cardOnHand() > 0) {
-        sender->setCardOnHand(cards->cardIterator);
-        cards->cardIterator++;
-    }
+//    if (sender->cardOnHand() > 0) {
+//        sender->setCardOnHand(cards->cardIterator);
+//        cards->cardIterator++;
+//    }
 
-    for (ServerWorker *worker : m_clients) {
-        QJsonObject card;
-        int b = 0;
-        if (!(worker == sender && sender->points() == 0)) {
-            b = cards->stash[worker->cardOnHand()];
-            card[QStringLiteral("A")] = cards->cards[b][0];
-            card[QStringLiteral("B")] = cards->cards[b][1];
-            card[QStringLiteral("C")] = cards->cards[b][2];
-            card[QStringLiteral("D")] = cards->cards[b][3];
-            card[QStringLiteral("E")] = cards->cards[b][4];
-            card[QStringLiteral("F")] = cards->cards[b][5];
-            card[QStringLiteral("G")] = cards->cards[b][6];
-            card[QStringLiteral("H")] = cards->cards[b][7];
-        } else {
-            card[QStringLiteral("A")] = "";
-            card[QStringLiteral("B")] = "";
-            card[QStringLiteral("C")] = "";
-            card[QStringLiteral("D")] = "";
-            card[QStringLiteral("E")] = "";
-            card[QStringLiteral("F")] = "";
-            card[QStringLiteral("G")] = "";
-            card[QStringLiteral("H")] = "";
-        }
-        QJsonObject message;
-        message[QStringLiteral("type")] = QStringLiteral("countDownFinished");
-        message[QStringLiteral("success")] = true;
-        message[QStringLiteral("card")] = card;
-        message[QStringLiteral("boardCard")] = boardCard;
-        sendJson(worker, message);
-        QJsonObject secondMessage;
-        message[QStringLiteral("type")] = QStringLiteral("message");
-        QString line = "Card on board: ";
-        for (int i=0; i<8; i++) {
-            line += QString::number(cards->cards[a][i])+" ";
-        }
-        message[QStringLiteral("text")] = line;
-        message[QStringLiteral("sender")] = "Server";
-        sendJson(worker, message);
-        line = "Card in hand: ";
-        for (int i=0; i<8; i++) {
-            line += QString::number(cards->cards[b][i])+" ";
-        }
-        message[QStringLiteral("text")] = line;
-        message[QStringLiteral("sender")] = "Server";
-        sendJson(worker, message);
-    }
+//    for (ServerWorker *worker : m_clients) {
+//        QJsonObject card;
+//        int b = 0;
+//        if (!(worker == sender && sender->points() == 0)) {
+//            b = cards->stash[worker->cardOnHand()];
+//            card[QStringLiteral("A")] = cards->cards[b][0];
+//            card[QStringLiteral("B")] = cards->cards[b][1];
+//            card[QStringLiteral("C")] = cards->cards[b][2];
+//            card[QStringLiteral("D")] = cards->cards[b][3];
+//            card[QStringLiteral("E")] = cards->cards[b][4];
+//            card[QStringLiteral("F")] = cards->cards[b][5];
+//            card[QStringLiteral("G")] = cards->cards[b][6];
+//            card[QStringLiteral("H")] = cards->cards[b][7];
+//        } else {
+//            card[QStringLiteral("A")] = "";
+//            card[QStringLiteral("B")] = "";
+//            card[QStringLiteral("C")] = "";
+//            card[QStringLiteral("D")] = "";
+//            card[QStringLiteral("E")] = "";
+//            card[QStringLiteral("F")] = "";
+//            card[QStringLiteral("G")] = "";
+//            card[QStringLiteral("H")] = "";
+//        }
+//        QJsonObject message;
+//        message[QStringLiteral("type")] = QStringLiteral("countDownFinished");
+//        message[QStringLiteral("success")] = true;
+//        message[QStringLiteral("card")] = card;
+//        message[QStringLiteral("boardCard")] = boardCard;
+//        sendJson(worker, message);
+//        QJsonObject secondMessage;
+//        message[QStringLiteral("type")] = QStringLiteral("message");
+//        QString line = "Card on board: ";
+//        for (int i=0; i<8; i++) {
+//            line += QString::number(cards->cards[a][i])+" ";
+//        }
+//        message[QStringLiteral("text")] = line;
+//        message[QStringLiteral("sender")] = "Server";
+//        sendJson(worker, message);
+//        line = "Card in hand: ";
+//        for (int i=0; i<8; i++) {
+//            line += QString::number(cards->cards[b][i])+" ";
+//        }
+//        message[QStringLiteral("text")] = line;
+//        message[QStringLiteral("sender")] = "Server";
+//        sendJson(worker, message);
+//    }
 }
 
 void ChatServer::startGame()
 {
-    timer->stop();
-    cards->randomize();
+//    timer->stop();
+//    cards->randomize();
 
-    int a = cards->stash[cards->cardOnBoard];
-    QJsonObject boardCard;
-    boardCard[QStringLiteral("A")] = cards->cards[a][0];
-    boardCard[QStringLiteral("B")] = cards->cards[a][1];
-    boardCard[QStringLiteral("C")] = cards->cards[a][2];
-    boardCard[QStringLiteral("D")] = cards->cards[a][3];
-    boardCard[QStringLiteral("E")] = cards->cards[a][4];
-    boardCard[QStringLiteral("F")] = cards->cards[a][5];
-    boardCard[QStringLiteral("G")] = cards->cards[a][6];
-    boardCard[QStringLiteral("H")] = cards->cards[a][7];
+//    int a = cards->stash[cards->cardOnBoard];
+//    QJsonObject boardCard;
+//    boardCard[QStringLiteral("A")] = cards->cards[a][0];
+//    boardCard[QStringLiteral("B")] = cards->cards[a][1];
+//    boardCard[QStringLiteral("C")] = cards->cards[a][2];
+//    boardCard[QStringLiteral("D")] = cards->cards[a][3];
+//    boardCard[QStringLiteral("E")] = cards->cards[a][4];
+//    boardCard[QStringLiteral("F")] = cards->cards[a][5];
+//    boardCard[QStringLiteral("G")] = cards->cards[a][6];
+//    boardCard[QStringLiteral("H")] = cards->cards[a][7];
 
-    for (ServerWorker *worker : m_clients) {
-        int b = cards->stash[cards->cardIterator];
-        QJsonObject card;
-        card[QStringLiteral("A")] = cards->cards[b][0];
-        card[QStringLiteral("B")] = cards->cards[b][1];
-        card[QStringLiteral("C")] = cards->cards[b][2];
-        card[QStringLiteral("D")] = cards->cards[b][3];
-        card[QStringLiteral("E")] = cards->cards[b][4];
-        card[QStringLiteral("F")] = cards->cards[b][5];
-        card[QStringLiteral("G")] = cards->cards[b][6];
-        card[QStringLiteral("H")] = cards->cards[b][7];
-        worker->setCardOnHand(cards->cardIterator);
-        cards->cardIterator++;
-        QJsonObject message;
-        message[QStringLiteral("type")] = QStringLiteral("countDownFinished");
-        message[QStringLiteral("success")] = true;
-        message[QStringLiteral("card")] = card;
-        message[QStringLiteral("boardCard")] = boardCard;
-        sendJson(worker, message);
-        emit logMessage(QLatin1String("Starting the game"));
-        QJsonObject secondMessage;
-        message[QStringLiteral("type")] = QStringLiteral("message");
-        QString line = "Card on board: ";
-        for (int i=0; i<8; i++) {
-            line += QString::number(cards->cards[a][i])+" ";
-        }
-        message[QStringLiteral("text")] = line;
-        message[QStringLiteral("sender")] = "Server";
-        sendJson(worker, message);
-        line = "Card in hand: ";
-        for (int i=0; i<8; i++) {
-            line += QString::number(cards->cards[b][i])+" ";
-        }
-        message[QStringLiteral("text")] = line;
-        message[QStringLiteral("sender")] = "Server";
-        sendJson(worker, message);
-    }
-    isGameOn = true;
+//    for (ServerWorker *worker : m_clients) {
+//        int b = cards->stash[cards->cardIterator];
+//        QJsonObject card;
+//        card[QStringLiteral("A")] = cards->cards[b][0];
+//        card[QStringLiteral("B")] = cards->cards[b][1];
+//        card[QStringLiteral("C")] = cards->cards[b][2];
+//        card[QStringLiteral("D")] = cards->cards[b][3];
+//        card[QStringLiteral("E")] = cards->cards[b][4];
+//        card[QStringLiteral("F")] = cards->cards[b][5];
+//        card[QStringLiteral("G")] = cards->cards[b][6];
+//        card[QStringLiteral("H")] = cards->cards[b][7];
+//        worker->setCardOnHand(cards->cardIterator);
+//        cards->cardIterator++;
+//        QJsonObject message;
+//        message[QStringLiteral("type")] = QStringLiteral("countDownFinished");
+//        message[QStringLiteral("success")] = true;
+//        message[QStringLiteral("card")] = card;
+//        message[QStringLiteral("boardCard")] = boardCard;
+//        sendJson(worker, message);
+//        emit logMessage(QLatin1String("Starting the game"));
+//        QJsonObject secondMessage;
+//        message[QStringLiteral("type")] = QStringLiteral("message");
+//        QString line = "Card on board: ";
+//        for (int i=0; i<8; i++) {
+//            line += QString::number(cards->cards[a][i])+" ";
+//        }
+//        message[QStringLiteral("text")] = line;
+//        message[QStringLiteral("sender")] = "Server";
+//        sendJson(worker, message);
+//        line = "Card in hand: ";
+//        for (int i=0; i<8; i++) {
+//            line += QString::number(cards->cards[b][i])+" ";
+//        }
+//        message[QStringLiteral("text")] = line;
+//        message[QStringLiteral("sender")] = "Server";
+//        sendJson(worker, message);
+//    }
+//    isGameOn = true;
 }
 
 bool ChatServer::inCardOnBoard(int n)
 {
-    for (int i = 0; i < 8; i++) {
-        if(cards->cards[cards->stash[cards->cardOnBoard]][i] == n)
-            return true;
-    }
-    return false;
+//    for (int i = 0; i < 8; i++) {
+//        if(cards->cards[cards->stash[cards->cardOnBoard]][i] == n)
+//            return true;
+//    }
+//    return false;
 }
 
 void ChatServer::jsonFromLoggedIn(ServerWorker *sender, const QJsonObject &docObj)

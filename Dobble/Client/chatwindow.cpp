@@ -6,7 +6,9 @@
 #include <QMessageBox>
 #include <QHostAddress>
 #include <QJsonObject>
-#include<QDebug>
+#include <QDebug>
+#include "cards.h"
+#include <QTimer>
 
 ChatWindow::ChatWindow(QWidget *parent)
     : QWidget(parent)
@@ -37,6 +39,8 @@ ChatWindow::ChatWindow(QWidget *parent)
     connect(m_chatClient, &ChatClient::playerCount, this, &ChatWindow::playerCount);
     connect(m_chatClient, &ChatClient::countDown, this, &ChatWindow::countDown);
     connect(m_chatClient, &ChatClient::countDownFinished, this, &ChatWindow::countDownFinished);
+    connect(m_chatClient, &ChatClient::loginDuplicate, this, &ChatWindow::loginDuplicate);
+    connect(m_chatClient, &ChatClient::finishRound, this, &ChatWindow::finishRound);
     connect(m_chatClient, &ChatClient::userLeft, this, &ChatWindow::userLeft);
 
     connect(ui->connectButton, &QPushButton::clicked, this, &ChatWindow::attemptConnection);
@@ -81,6 +85,7 @@ void ChatWindow::connectedToServer()
 {
     const QString newUsername = QInputDialog::getText(this, tr("Chose Username"), tr("Username"));
     if (newUsername.isEmpty()){
+        QMessageBox::warning(this, "Error", "Empty login");
         return m_chatClient->disconnectFromHost();
     }
     attemptLogin(newUsername);
@@ -114,8 +119,8 @@ void ChatWindow::messageReceived(const QString &text)
 void ChatWindow::sendMessage()
 {
     auto button = qobject_cast<QPushButton *>(sender());
-    QString message = button->text();
-    m_chatClient->sendMessage(message);
+    QString message = button->objectName();
+    m_chatClient->sendMessage("answer,"+QString::number(message[message.length()-1].unicode()-65));
 }
 
 void ChatWindow::disconnectedFromServer()
@@ -144,6 +149,35 @@ void ChatWindow::userJoined(const QString &username)
     m_chatModel->setData(m_chatModel->index(newRow, 0), Qt::AlignCenter, Qt::TextAlignmentRole);
     m_chatModel->setData(m_chatModel->index(newRow, 0), QBrush(Qt::blue), Qt::ForegroundRole);
     ui->chatView->scrollToBottom();
+}
+
+void ChatWindow::clearBoard()
+{
+    ui->labelA->setText("");
+    ui->labelB->setText("");
+    ui->labelC->setText("");
+    ui->labelD->setText("");
+    ui->labelE->setText("");
+    ui->labelF->setText("");
+    ui->labelG->setText("");
+    ui->labelH->setText("");
+    ui->buttonA->setText("");
+    ui->buttonB->setText("");
+    ui->buttonC->setText("");
+    ui->buttonD->setText("");
+    ui->buttonE->setText("");
+    ui->buttonF->setText("");
+    ui->buttonG->setText("");
+    ui->buttonH->setText("");
+    ui->buttonA->setEnabled(false);
+    ui->buttonB->setEnabled(false);
+    ui->buttonC->setEnabled(false);
+    ui->buttonD->setEnabled(false);
+    ui->buttonE->setEnabled(false);
+    ui->buttonF->setEnabled(false);
+    ui->buttonG->setEnabled(false);
+    ui->buttonH->setEnabled(false);
+    ui->chatView->setEnabled(false);
 }
 
 void ChatWindow::resetPlayers()
@@ -214,7 +248,7 @@ void ChatWindow::countDown(const int &timer)
     }
 }
 
-void ChatWindow::countDownFinished(const bool &success, const QJsonObject &card, const QJsonObject &boardCard)
+void ChatWindow::countDownFinished(const bool &success, const int &card, const int &boardCard)
 {
     if (success)
     {
@@ -226,22 +260,22 @@ void ChatWindow::countDownFinished(const bool &success, const QJsonObject &card,
         ui->buttonF->setEnabled(true);
         ui->buttonG->setEnabled(true);
         ui->buttonH->setEnabled(true);
-        ui->labelA->setText(QString::number(boardCard["A"].toInt()));
-        ui->labelB->setText(QString::number(boardCard["B"].toInt()));
-        ui->labelC->setText(QString::number(boardCard["C"].toInt()));
-        ui->labelD->setText(QString::number(boardCard["D"].toInt()));
-        ui->labelE->setText(QString::number(boardCard["E"].toInt()));
-        ui->labelF->setText(QString::number(boardCard["F"].toInt()));
-        ui->labelG->setText(QString::number(boardCard["G"].toInt()));
-        ui->labelH->setText(QString::number(boardCard["H"].toInt()));
-        ui->buttonA->setText(QString::number(card["A"].toInt()));
-        ui->buttonB->setText(QString::number(card["B"].toInt()));
-        ui->buttonC->setText(QString::number(card["C"].toInt()));
-        ui->buttonD->setText(QString::number(card["D"].toInt()));
-        ui->buttonE->setText(QString::number(card["E"].toInt()));
-        ui->buttonF->setText(QString::number(card["F"].toInt()));
-        ui->buttonG->setText(QString::number(card["G"].toInt()));
-        ui->buttonH->setText(QString::number(card["H"].toInt()));
+        ui->labelA->setText(cards->symbols[cards->cards[boardCard][0]-1]);
+        ui->labelB->setText(cards->symbols[cards->cards[boardCard][1]-1]);
+        ui->labelC->setText(cards->symbols[cards->cards[boardCard][2]-1]);
+        ui->labelD->setText(cards->symbols[cards->cards[boardCard][3]-1]);
+        ui->labelE->setText(cards->symbols[cards->cards[boardCard][4]-1]);
+        ui->labelF->setText(cards->symbols[cards->cards[boardCard][5]-1]);
+        ui->labelG->setText(cards->symbols[cards->cards[boardCard][6]-1]);
+        ui->labelH->setText(cards->symbols[cards->cards[boardCard][7]-1]);
+        ui->buttonA->setText(cards->symbols[cards->cards[card][0]-1]);
+        ui->buttonB->setText(cards->symbols[cards->cards[card][1]-1]);
+        ui->buttonC->setText(cards->symbols[cards->cards[card][2]-1]);
+        ui->buttonD->setText(cards->symbols[cards->cards[card][3]-1]);
+        ui->buttonE->setText(cards->symbols[cards->cards[card][4]-1]);
+        ui->buttonF->setText(cards->symbols[cards->cards[card][5]-1]);
+        ui->buttonG->setText(cards->symbols[cards->cards[card][6]-1]);
+        ui->buttonH->setText(cards->symbols[cards->cards[card][7]-1]);
         ui->countDown->setText("Game has started");
         ui->startButton->setEnabled(false);
     }
@@ -249,6 +283,25 @@ void ChatWindow::countDownFinished(const bool &success, const QJsonObject &card,
     {
         QMessageBox::warning(this, "Error", "Too few players to start");
     }
+}
+
+void ChatWindow::loginDuplicate()
+{
+    QMessageBox::warning(this, "Error", "Duplicate username");
+}
+
+void ChatWindow::finishRound(const int isWin, const QString &username)
+{
+    clearBoard();
+    QMessageBox *mbox = new QMessageBox(this);
+    mbox->setWindowTitle(tr("Game has finished"));
+    if (isWin) {
+        mbox->setText("You won");
+    } else {
+        mbox->setText(username+" won");
+    }
+    mbox->exec();
+    QTimer::singleShot(5000, mbox, SLOT(hide()));
 }
 
 void ChatWindow::userLeft(const QString &username)

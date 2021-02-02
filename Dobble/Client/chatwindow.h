@@ -3,6 +3,8 @@
 
 #include <QWidget>
 #include <QAbstractSocket>
+#include "cards.h"
+
 class ChatClient;
 class QStandardItemModel;
 namespace Ui { class ChatWindow; }
@@ -17,6 +19,7 @@ private:
     Ui::ChatWindow *ui;
     ChatClient *m_chatClient;
     QStandardItemModel *m_chatModel;
+    Cards *cards = new Cards;
 private slots:
     void attemptConnection();
     void startGame();
@@ -29,9 +32,12 @@ private slots:
     void disconnectedFromServer();
     void userJoined(const QString &username);
     void resetPlayers();
+    void clearBoard();
     void playerCount(const int &count, const QJsonObject &players);
     void countDown(const int &timer);
-    void countDownFinished(const bool &success, const QJsonObject &card, const QJsonObject &boardCard);
+    void countDownFinished(const bool &success, const int &card, const int &boardCard);
+    void loginDuplicate();
+    void finishRound(const int isWin, const QString &username);
     void userLeft(const QString &username);
     void error(QAbstractSocket::SocketError socketError);
 };
