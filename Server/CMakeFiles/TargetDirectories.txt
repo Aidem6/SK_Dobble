@@ -1,0 +1,3 @@
+/home/adam/Documents/SK_Dobble/Server/CMakeFiles/rebuild_cache.dir
+/home/adam/Documents/SK_Dobble/Server/CMakeFiles/server.dir
+/home/adam/Documents/SK_Dobble/Server/CMakeFiles/edit_cache.dir
