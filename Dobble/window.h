@@ -1,24 +1,24 @@
-#ifndef CHATWINDOW_H
-#define CHATWINDOW_H
+#ifndef WINDOW_H
+#define WINDOW_H
 
 #include <QWidget>
 #include <QAbstractSocket>
 #include "cards.h"
 
-class ChatClient;
+class Client;
 class QStandardItemModel;
-namespace Ui { class ChatWindow; }
-class ChatWindow : public QWidget
+namespace Ui { class Window; }
+class Window : public QWidget
 {
     Q_OBJECT
-    Q_DISABLE_COPY(ChatWindow)
+    Q_DISABLE_COPY(Window)
 public:
-    explicit ChatWindow(QWidget *parent = nullptr);
-    ~ChatWindow();
+    explicit Window(QWidget *parent = nullptr);
+    ~Window();
 private:
-    Ui::ChatWindow *ui;
-    ChatClient *m_chatClient;
-    QStandardItemModel *m_chatModel;
+    Ui::Window *ui;
+    Client *m_Client;
+    QStandardItemModel *m_Model;
     Cards *cards = new Cards;
 private slots:
     void attemptConnection();
@@ -26,11 +26,8 @@ private slots:
     void connectedToServer();
     void attemptLogin(const QString &userName);
     void loggedIn();
-    void loginFailed(const QString &reason);
-    void messageReceived(const QString &text);
     void sendMessage();
     void disconnectedFromServer();
-    void userJoined(const QString &username);
     void resetPlayers();
     void clearBoard();
     void playerCount(const int &count, const QJsonObject &players);
@@ -39,8 +36,7 @@ private slots:
     void loginDuplicate();
     void userLimit();
     void finishRound(const int isWin, const QString &username);
-    void userLeft(const QString &username);
     void error(QAbstractSocket::SocketError socketError);
 };
 
-#endif // CHATWINDOW_H
+#endif // WINDOW_H

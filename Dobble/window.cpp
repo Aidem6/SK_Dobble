@@ -1,6 +1,6 @@
-#include "chatwindow.h"
-#include "ui_chatwindow.h"
-#include "chatclient.h"
+#include "window.h"
+#include "ui_window.h"
+#include "client.h"
 #include <QStandardItemModel>
 #include <QInputDialog>
 #include <QMessageBox>
@@ -10,11 +10,10 @@
 #include "cards.h"
 #include <QTimer>
 
-ChatWindow::ChatWindow(QWidget *parent)
+Window::Window(QWidget *parent)
     : QWidget(parent)
-    , ui(new Ui::ChatWindow)
-    , m_chatClient(new ChatClient(this))
-    , m_chatModel(new QStandardItemModel(this))
+    , ui(new Ui::Window)
+    , m_Client(new Client(this))
 {
     ui->setupUi(this);
 
@@ -26,42 +25,36 @@ ChatWindow::ChatWindow(QWidget *parent)
     ui->progressBar_6->hide();
     ui->progressBar_7->hide();
     ui->progressBar_8->hide();
-    m_chatModel->insertColumn(0);
-    ui->chatView->setModel(m_chatModel);
 
-    connect(m_chatClient, &ChatClient::connected, this, &ChatWindow::connectedToServer);
-    connect(m_chatClient, &ChatClient::loggedIn, this, &ChatWindow::loggedIn);
-    connect(m_chatClient, &ChatClient::loginError, this, &ChatWindow::loginFailed);
-    connect(m_chatClient, &ChatClient::messageReceived, this, &ChatWindow::messageReceived);
-    connect(m_chatClient, &ChatClient::disconnected, this, &ChatWindow::disconnectedFromServer);
-    connect(m_chatClient, &ChatClient::error, this, &ChatWindow::error);
-    connect(m_chatClient, &ChatClient::userJoined, this, &ChatWindow::userJoined);
-    connect(m_chatClient, &ChatClient::playerCount, this, &ChatWindow::playerCount);
-    connect(m_chatClient, &ChatClient::countDown, this, &ChatWindow::countDown);
-    connect(m_chatClient, &ChatClient::countDownFinished, this, &ChatWindow::countDownFinished);
-    connect(m_chatClient, &ChatClient::loginDuplicate, this, &ChatWindow::loginDuplicate);
-    connect(m_chatClient, &ChatClient::finishRound, this, &ChatWindow::finishRound);
-    connect(m_chatClient, &ChatClient::userLimit, this, &ChatWindow::userLimit);
-    connect(m_chatClient, &ChatClient::userLeft, this, &ChatWindow::userLeft);
+    connect(m_Client, &Client::connected, this, &Window::connectedToServer);
+    connect(m_Client, &Client::loggedIn, this, &Window::loggedIn);
+    connect(m_Client, &Client::disconnected, this, &Window::disconnectedFromServer);
+    connect(m_Client, &Client::error, this, &Window::error);
+    connect(m_Client, &Client::playerCount, this, &Window::playerCount);
+    connect(m_Client, &Client::countDown, this, &Window::countDown);
+    connect(m_Client, &Client::countDownFinished, this, &Window::countDownFinished);
+    connect(m_Client, &Client::loginDuplicate, this, &Window::loginDuplicate);
+    connect(m_Client, &Client::finishRound, this, &Window::finishRound);
+    connect(m_Client, &Client::userLimit, this, &Window::userLimit);
 
-    connect(ui->connectButton, &QPushButton::clicked, this, &ChatWindow::attemptConnection);
-    connect(ui->startButton, &QPushButton::clicked, this, &ChatWindow::startGame);
-    connect(ui->buttonA, &QPushButton::clicked, this, &ChatWindow::sendMessage);
-    connect(ui->buttonB, &QPushButton::clicked, this, &ChatWindow::sendMessage);
-    connect(ui->buttonC, &QPushButton::clicked, this, &ChatWindow::sendMessage);
-    connect(ui->buttonD, &QPushButton::clicked, this, &ChatWindow::sendMessage);
-    connect(ui->buttonE, &QPushButton::clicked, this, &ChatWindow::sendMessage);
-    connect(ui->buttonF, &QPushButton::clicked, this, &ChatWindow::sendMessage);
-    connect(ui->buttonG, &QPushButton::clicked, this, &ChatWindow::sendMessage);
-    connect(ui->buttonH, &QPushButton::clicked, this, &ChatWindow::sendMessage);
+    connect(ui->connectButton, &QPushButton::clicked, this, &Window::attemptConnection);
+    connect(ui->startButton, &QPushButton::clicked, this, &Window::startGame);
+    connect(ui->buttonA, &QPushButton::clicked, this, &Window::sendMessage);
+    connect(ui->buttonB, &QPushButton::clicked, this, &Window::sendMessage);
+    connect(ui->buttonC, &QPushButton::clicked, this, &Window::sendMessage);
+    connect(ui->buttonD, &QPushButton::clicked, this, &Window::sendMessage);
+    connect(ui->buttonE, &QPushButton::clicked, this, &Window::sendMessage);
+    connect(ui->buttonF, &QPushButton::clicked, this, &Window::sendMessage);
+    connect(ui->buttonG, &QPushButton::clicked, this, &Window::sendMessage);
+    connect(ui->buttonH, &QPushButton::clicked, this, &Window::sendMessage);
 }
 
-ChatWindow::~ChatWindow()
+Window::~Window()
 {
     delete ui;
 }
 
-void ChatWindow::attemptConnection()
+void Window::attemptConnection()
 {
     const QString hostAddress = QInputDialog::getText(
         this
@@ -73,58 +66,38 @@ void ChatWindow::attemptConnection()
     if (hostAddress.isEmpty())
         return;
     ui->connectButton->setEnabled(false);
-    m_chatClient->connectToServer(QHostAddress(hostAddress), 2000);
+    m_Client->connectToServer(QHostAddress(hostAddress), 2000);
 }
 
-void ChatWindow::startGame()
+void Window::startGame()
 {
     ui->connectButton->setEnabled(false);
-    m_chatClient->startGame();
+    m_Client->startGame();
 }
 
-void ChatWindow::connectedToServer()
+void Window::connectedToServer()
 {
     const QString newUsername = QInputDialog::getText(this, tr("Chose Username"), tr("Username"));
     if (newUsername.isEmpty()){
         QMessageBox::warning(this, "Error", "Empty login");
-        return m_chatClient->disconnectFromHost();
+        return m_Client->disconnectFromHost();
     }
     attemptLogin(newUsername);
 }
 
-void ChatWindow::attemptLogin(const QString &userName)
+void Window::attemptLogin(const QString &userName)
 {
-    m_chatClient->login(userName);
+    m_Client->login(userName);
 }
 
-void ChatWindow::loggedIn()
-{
-    ui->chatView->setEnabled(true);
-}
-
-void ChatWindow::loginFailed(const QString &reason)
-{
-    QMessageBox::critical(this, tr("Error"), reason);
-    connectedToServer();
-}
-
-void ChatWindow::messageReceived(const QString &text)
-{
-    int newRow = m_chatModel->rowCount();
-    m_chatModel->insertRow(newRow);
-    m_chatModel->setData(m_chatModel->index(newRow, 0), text);
-    m_chatModel->setData(m_chatModel->index(newRow, 0), int(Qt::AlignLeft | Qt::AlignVCenter), Qt::TextAlignmentRole);
-    ui->chatView->scrollToBottom();
-}
-
-void ChatWindow::sendMessage()
+void Window::sendMessage()
 {
     auto button = qobject_cast<QPushButton *>(sender());
     QString message = button->objectName();
-    m_chatClient->sendMessage("answer,"+QString::number(message[message.length()-1].unicode()-65));
+    m_Client->sendMessage("answer,"+QString::number(message[message.length()-1].unicode()-65));
 }
 
-void ChatWindow::disconnectedFromServer()
+void Window::disconnectedFromServer()
 {
     QMessageBox::warning(this, tr("Disconnected"), tr("The host terminated the connection"));
     ui->buttonA->setEnabled(false);
@@ -135,24 +108,13 @@ void ChatWindow::disconnectedFromServer()
     ui->buttonF->setEnabled(false);
     ui->buttonG->setEnabled(false);
     ui->buttonH->setEnabled(false);
-    ui->chatView->setEnabled(false);
     ui->connectButton->setEnabled(true);
     ui->startButton->setEnabled(false);
     ui->playerCount->setText("Number of players: 0");
     ui->countDown->setText("");
 }
 
-void ChatWindow::userJoined(const QString &username)
-{
-    const int newRow = m_chatModel->rowCount();
-    m_chatModel->insertRow(newRow);
-    m_chatModel->setData(m_chatModel->index(newRow, 0), tr("%1 joined the game").arg(username));
-    m_chatModel->setData(m_chatModel->index(newRow, 0), Qt::AlignCenter, Qt::TextAlignmentRole);
-    m_chatModel->setData(m_chatModel->index(newRow, 0), QBrush(Qt::blue), Qt::ForegroundRole);
-    ui->chatView->scrollToBottom();
-}
-
-void ChatWindow::clearBoard()
+void Window::clearBoard()
 {
     ui->labelA->setText("");
     ui->labelB->setText("");
@@ -178,10 +140,9 @@ void ChatWindow::clearBoard()
     ui->buttonF->setEnabled(false);
     ui->buttonG->setEnabled(false);
     ui->buttonH->setEnabled(false);
-    ui->chatView->setEnabled(false);
 }
 
-void ChatWindow::resetPlayers()
+void Window::resetPlayers()
 {
     ui->progressBar_1->hide();
     ui->progressBar_2->hide();
@@ -209,7 +170,13 @@ void ChatWindow::resetPlayers()
     ui->playerName8->setText("");
 }
 
-void ChatWindow::playerCount(const int &n, const QJsonObject &players)
+void Window::loggedIn()
+{
+    qDebug() << "Logged in successfully";
+    ui->countDown->setText("Logged in successfully");
+}
+
+void Window::playerCount(const int &n, const QJsonObject &players)
 {
     ui->playerCount->setText("Number of players: " + QString::number(n));
 
@@ -239,12 +206,12 @@ void ChatWindow::playerCount(const int &n, const QJsonObject &players)
     }
 }
 
-void ChatWindow::countDown(const int &timer)
+void Window::countDown(const int &timer)
 {
     ui->countDown->setText("Game will begin in " + QString::number(timer) + " seconds or when host will press start");
 }
 
-void ChatWindow::countDownFinished(const bool &success, const int &card, const int &boardCard)
+void Window::countDownFinished(const bool &success, const int &card, const int &boardCard)
 {
     if (success)
     {
@@ -281,17 +248,18 @@ void ChatWindow::countDownFinished(const bool &success, const int &card, const i
     }
 }
 
-void ChatWindow::loginDuplicate()
+void Window::loginDuplicate()
 {
     QMessageBox::warning(this, "Error", "Duplicate username");
 }
 
-void ChatWindow::userLimit()
+void Window::userLimit()
 {
+    qDebug() << "too many players";
     QMessageBox::warning(this, "Error", "Too many players");
 }
 
-void ChatWindow::finishRound(const int isWin, const QString &username)
+void Window::finishRound(const int isWin, const QString &username)
 {
     clearBoard();
     if (isWin) {
@@ -301,17 +269,7 @@ void ChatWindow::finishRound(const int isWin, const QString &username)
     }
 }
 
-void ChatWindow::userLeft(const QString &username)
-{
-    const int newRow = m_chatModel->rowCount();
-    m_chatModel->insertRow(newRow);
-    m_chatModel->setData(m_chatModel->index(newRow, 0), tr("%1 left the game").arg(username));
-    m_chatModel->setData(m_chatModel->index(newRow, 0), Qt::AlignCenter, Qt::TextAlignmentRole);
-    m_chatModel->setData(m_chatModel->index(newRow, 0), QBrush(Qt::red), Qt::ForegroundRole);
-    ui->chatView->scrollToBottom();
-}
-
-void ChatWindow::error(QAbstractSocket::SocketError socketError)
+void Window::error(QAbstractSocket::SocketError socketError)
 {
     switch (socketError) {
     case QAbstractSocket::RemoteHostClosedError:
@@ -375,5 +333,4 @@ void ChatWindow::error(QAbstractSocket::SocketError socketError)
     ui->buttonF->setEnabled(false);
     ui->buttonG->setEnabled(false);
     ui->buttonH->setEnabled(false);
-    ui->chatView->setEnabled(false);
 }
