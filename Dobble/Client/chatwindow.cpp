@@ -288,22 +288,17 @@ void ChatWindow::loginDuplicate()
 
 void ChatWindow::userLimit()
 {
-    qDebug() << "too many players";
     QMessageBox::warning(this, "Error", "Too many players");
 }
 
 void ChatWindow::finishRound(const int isWin, const QString &username)
 {
     clearBoard();
-    QMessageBox *mbox = new QMessageBox(this);
-    mbox->setWindowTitle(tr("Game has finished"));
     if (isWin) {
-        mbox->setText("You won");
+        ui->countDown->setText("You won");
     } else {
-        mbox->setText(username+" won");
+        ui->countDown->setText(username+" won");
     }
-    mbox->exec();
-    QTimer::singleShot(5000, mbox, SLOT(hide()));
 }
 
 void ChatWindow::userLeft(const QString &username)

@@ -42,8 +42,6 @@ void ChatClient::sendMessage(const QString &text)
     if (text.isEmpty())
         return;
 
-    qDebug() << text;
-
     char mess[40] = "";
     QByteArray ba = text.toLocal8Bit();
     const char *mess2 = ba.data();
@@ -58,7 +56,6 @@ void ChatClient::disconnectFromHost()
 
 void ChatClient::messageType(const QString &data)
 {
-    qDebug() << data;
     emit messageReceived(data);
     QStringList list = data.split(',');
     if (list[0].compare(QLatin1String("loginSuccess"), Qt::CaseInsensitive) == 0) {

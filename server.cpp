@@ -14,7 +14,7 @@
 #define TRUE   1
 #define FALSE  0
 #define PORT 2000
-#define MAX_CLIENTS 30
+#define MAX_CLIENTS 10
 
 int cards[57][8] = {
     {1, 8, 15, 16, 17, 18, 19, 20},
@@ -81,12 +81,13 @@ struct Player {
    int   points;
    int   cardOnHand;
    int   socket;
-} players[30];
+} players[MAX_CLIENTS];
 
 struct Game {
     int numberOfPlayers;
     int timer;
     bool on;
+    bool nextRoundTimerOn;
     int cardOnBoard;
     int cardIterator;
     int stash[57];
@@ -114,25 +115,27 @@ void sendCard(int i) {
     strcat(countDownFinished, c);
     strcat(countDownFinished, ".");
 
-    printf("%s\n", countDownFinished);
-
     if( (unsigned)send(players[i].socket, countDownFinished, strlen(countDownFinished), 0) != strlen(countDownFinished) ) {
         perror("send");
     }
 }
 
-void countDownFinished() {
-    if (game.numberOfPlayers < 2) {
-        char countDownFinished[30] = "countDownFinished,0;0;0";
-        broadcast(countDownFinished);
-        return;
-    }
-    for (int i = 0; i < MAX_CLIENTS; i++) {
-        if ( players[i].socket != 0 ) {
-            sendCard(i);
+void shuffle(int *array, size_t n) {    
+    struct timeval tv;
+    gettimeofday(&tv, NULL);
+    int usec = tv.tv_usec;
+    srand48(usec);
+
+
+    if (n > 1) {
+        size_t i;
+        for (i = n - 1; i > 0; i--) {
+            size_t j = (unsigned int) (drand48()*(i+1));
+            int t = array[j];
+            array[j] = array[i];
+            array[i] = t;
         }
     }
-    game.on = TRUE;
 }
 
 void playerCount(int numberOfPlayers) {
@@ -153,13 +156,33 @@ void playerCount(int numberOfPlayers) {
     broadcast(playerCount);
 }
 
+void countDownFinished() {
+    if (game.numberOfPlayers < 2) {
+        char countDownFinished[30] = "countDownFinished,0;0;0";
+        broadcast(countDownFinished);
+        return;
+    }
+    int random[10] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
+    shuffle(random, 10);
+    for (int i = 0; i < MAX_CLIENTS; i++) {
+        if ( players[random[i]].socket != 0 ) {
+            sendCard(random[i]);
+        }
+    }
+    playerCount(game.numberOfPlayers);
+    game.on = TRUE;
+}
+
 void* timer(void *vargp) {
     while (1) {
+        if (game.nextRoundTimerOn) {
+            sleep(5);
+            game.nextRoundTimerOn = FALSE;
+        }
         if (game.numberOfPlayers < 2 || game.on) {
             return NULL;
         }
         else if (game.timer == 0 && game.numberOfPlayers >= 2) {
-        printf("%d\n", game.timer);
             countDownFinished();
             return NULL;
         }
@@ -184,6 +207,14 @@ bool numInCard(int answer) {
     return FALSE;
 }
 
+void resetPoints() {
+    for (int i = 0; i < MAX_CLIENTS; i++) {
+        if ( players[i].socket != 0 ) {
+            players[i].points = 7;
+        }
+    }
+}
+
 void check(int i, int max_clients, char *message) {
     if (!numInCard(cards[players[i].cardOnHand][atoi(message)])) {
         return;
@@ -197,6 +228,13 @@ void check(int i, int max_clients, char *message) {
     if (players[i].points != 0) {
         return;
     }
+    game.on = FALSE;
+    resetPoints();
+    game.timer = 5;
+    game.nextRoundTimerOn = TRUE;
+    pthread_t tid;
+    pthread_create(&tid, NULL, timer, (void *)&tid);
+
     printf("%s has won\n", players[i].username);
     char finish[30] = "finish,1;0.";
     if ( (unsigned)send( players[i].socket, finish, strlen(finish), 0) != strlen(finish) ) {
@@ -210,29 +248,6 @@ void check(int i, int max_clients, char *message) {
             if ( (unsigned)send( players[k].socket, finish, strlen(finish), 0) != strlen(finish) ) {
                 perror("send");
             }
-            printf("%s\n", finish);
-        }
-    }
-    game.timer = 10;
-    pthread_t tid;
-    pthread_create(&tid, NULL, timer, (void *)&tid);
-    printf("pthread_create\n");
-}
-
-void shuffle(int *array, size_t n) {    
-    struct timeval tv;
-    gettimeofday(&tv, NULL);
-    int usec = tv.tv_usec;
-    srand48(usec);
-
-
-    if (n > 1) {
-        size_t i;
-        for (i = n - 1; i > 0; i--) {
-            size_t j = (unsigned int) (drand48()*(i+1));
-            int t = array[j];
-            array[j] = array[i];
-            array[i] = t;
         }
     }
 }
@@ -244,6 +259,7 @@ int main(int argc , char *argv[])
     int max_sd;
     struct sockaddr_in address;
     game.on = FALSE;
+    game.nextRoundTimerOn = FALSE;
     game.cardOnBoard = 0;
     game.cardIterator = 1;
 
@@ -378,7 +394,7 @@ int main(int argc , char *argv[])
             }
             
             //inform user of socket number - used in send and receive commands
-            printf("New connection , socket fd is %d , ip is : %s , port : %d\n" , new_socket , inet_ntoa(address.sin_addr) , ntohs(address.sin_port));
+            printf("New connection, socket fd is %d, ip is : %s, port : %d\n" , new_socket , inet_ntoa(address.sin_addr) , ntohs(address.sin_port));
 
             //add new socket to array of sockets
             for (i = 0; i < max_clients; i++)
@@ -447,11 +463,10 @@ int main(int argc , char *argv[])
                 } else {
                     //set the string terminating NULL byte on the end of the data read
                     buffer[valread] = '\0';
+                    printf("message received from %s: %s\n", players[i].username, buffer);
+
                     char delim[] = ",";
-
                     char *ptr = strtok(buffer, delim);
-
-                    // printf("type: %s\n", ptr);
                     char *type = ptr;
                     ptr = strtok(NULL, delim);
                     char *message = ptr;
