@@ -6,13 +6,14 @@ set(CMAKE_AUTORCC ON)
 set(CMAKE_AUTOUIC ON)
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -c -g -Wall")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g -Wall")
 find_package(Qt5 5.7 COMPONENTS Core Gui Widgets Network REQUIRED)
 add_executable(client
 	main.cpp
 	window.cpp
 	client.cpp
 	window.ui
+	cards.h
 	window.h
 	client.h
 )
