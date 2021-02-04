@@ -53,11 +53,15 @@ OBJECTS_DIR   = release/
 
 SOURCES       = ../Client/clientmain.cpp \
 		../Client/chatwindow.cpp \
-		../Client/chatclient.cpp release/moc_chatwindow.cpp \
+		../Client/chatclient.cpp \
+		../Client/cards.cpp release/moc_cards.cpp \
+		release/moc_chatwindow.cpp \
 		release/moc_chatclient.cpp
 OBJECTS       = release/clientmain.o \
 		release/chatwindow.o \
 		release/chatclient.o \
+		release/cards.o \
+		release/moc_cards.o \
 		release/moc_chatwindow.o \
 		release/moc_chatclient.o
 DIST          = ../../../../Qt/5.15.1/clang_64/mkspecs/features/spec_pre.prf \
@@ -271,10 +275,12 @@ DIST          = ../../../../Qt/5.15.1/clang_64/mkspecs/features/spec_pre.prf \
 		../../../../Qt/5.15.1/clang_64/mkspecs/features/exceptions.prf \
 		../../../../Qt/5.15.1/clang_64/mkspecs/features/yacc.prf \
 		../../../../Qt/5.15.1/clang_64/mkspecs/features/lex.prf \
-		../Client/Client.pro ../Client/chatwindow.h \
+		../Client/Client.pro ../Client/cards.h \
+		../Client/chatwindow.h \
 		../Client/chatclient.h ../Client/clientmain.cpp \
 		../Client/chatwindow.cpp \
-		../Client/chatclient.cpp
+		../Client/chatclient.cpp \
+		../Client/cards.cpp
 QMAKE_TARGET  = Client
 DESTDIR       = 
 TARGET        = Client.app/Contents/MacOS/Client
@@ -327,8 +333,8 @@ distdir: FORCE
 	@test -d $(DISTDIR) || mkdir -p $(DISTDIR)
 	$(COPY_FILE) --parents $(DIST) $(DISTDIR)/
 	$(COPY_FILE) --parents ../../../../Qt/5.15.1/clang_64/mkspecs/features/data/dummy.cpp $(DISTDIR)/
-	$(COPY_FILE) --parents ../Client/chatwindow.h ../Client/chatclient.h $(DISTDIR)/
-	$(COPY_FILE) --parents ../Client/clientmain.cpp ../Client/chatwindow.cpp ../Client/chatclient.cpp $(DISTDIR)/
+	$(COPY_FILE) --parents ../Client/cards.h ../Client/chatwindow.h ../Client/chatclient.h $(DISTDIR)/
+	$(COPY_FILE) --parents ../Client/clientmain.cpp ../Client/chatwindow.cpp ../Client/chatclient.cpp ../Client/cards.cpp $(DISTDIR)/
 	$(COPY_FILE) --parents ../Client/chatwindow.ui $(DISTDIR)/
 
 
@@ -364,14 +370,28 @@ compiler_moc_predefs_clean:
 release/moc_predefs.h: ../../../../Qt/5.15.1/clang_64/mkspecs/features/data/dummy.cpp
 	/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang++ -pipe -stdlib=libc++ -O2 -std=gnu++11 $(EXPORT_ARCH_ARGS) -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX11.1.sdk -mmacosx-version-min=10.13 -Wall -Wextra -dM -E -o release/moc_predefs.h ../../../../Qt/5.15.1/clang_64/mkspecs/features/data/dummy.cpp
 
-compiler_moc_header_make_all: release/moc_chatwindow.cpp release/moc_chatclient.cpp
+compiler_moc_header_make_all: release/moc_cards.cpp release/moc_chatwindow.cpp release/moc_chatclient.cpp
 compiler_moc_header_clean:
-	-$(DEL_FILE) release/moc_chatwindow.cpp release/moc_chatclient.cpp
+	-$(DEL_FILE) release/moc_cards.cpp release/moc_chatwindow.cpp release/moc_chatclient.cpp
+release/moc_cards.cpp: ../Client/cards.h \
+		../../../../Qt/5.15.1/clang_64/lib/QtCore.framework/Headers/QObject \
+		../../../../Qt/5.15.1/clang_64/lib/QtCore.framework/Headers/qobject.h \
+		../../../../Qt/5.15.1/clang_64/lib/QtCore.framework/Headers/QVector \
+		../../../../Qt/5.15.1/clang_64/lib/QtCore.framework/Headers/qvector.h \
+		release/moc_predefs.h \
+		../../../../Qt/5.15.1/clang_64/bin/moc
+	/Users/adam/Qt/5.15.1/clang_64/bin/moc $(DEFINES) --include /Users/adam/Desktop/SK_Dobble/Dobble/build-Client-Desktop_Qt_5_15_1_clang_64bit-Debug/release/moc_predefs.h -I/Users/adam/Qt/5.15.1/clang_64/mkspecs/macx-clang -I/Users/adam/Desktop/SK_Dobble/Dobble/Client -I/Users/adam/Qt/5.15.1/clang_64/lib/QtWidgets.framework/Headers -I/Users/adam/Qt/5.15.1/clang_64/lib/QtGui.framework/Headers -I/Users/adam/Qt/5.15.1/clang_64/lib/QtNetwork.framework/Headers -I/Users/adam/Qt/5.15.1/clang_64/lib/QtCore.framework/Headers -I. -I/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include/c++/v1 -I/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/clang/12.0.0/include -I/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX11.1.sdk/usr/include -I/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include -F/Users/adam/Qt/5.15.1/clang_64/lib ../Client/cards.h -o release/moc_cards.cpp
+
 release/moc_chatwindow.cpp: ../Client/chatwindow.h \
 		../../../../Qt/5.15.1/clang_64/lib/QtWidgets.framework/Headers/QWidget \
 		../../../../Qt/5.15.1/clang_64/lib/QtWidgets.framework/Headers/qwidget.h \
 		../../../../Qt/5.15.1/clang_64/lib/QtNetwork.framework/Headers/QAbstractSocket \
 		../../../../Qt/5.15.1/clang_64/lib/QtNetwork.framework/Headers/qabstractsocket.h \
+		../Client/cards.h \
+		../../../../Qt/5.15.1/clang_64/lib/QtCore.framework/Headers/QObject \
+		../../../../Qt/5.15.1/clang_64/lib/QtCore.framework/Headers/qobject.h \
+		../../../../Qt/5.15.1/clang_64/lib/QtCore.framework/Headers/QVector \
+		../../../../Qt/5.15.1/clang_64/lib/QtCore.framework/Headers/qvector.h \
 		release/moc_predefs.h \
 		../../../../Qt/5.15.1/clang_64/bin/moc
 	/Users/adam/Qt/5.15.1/clang_64/bin/moc $(DEFINES) --include /Users/adam/Desktop/SK_Dobble/Dobble/build-Client-Desktop_Qt_5_15_1_clang_64bit-Debug/release/moc_predefs.h -I/Users/adam/Qt/5.15.1/clang_64/mkspecs/macx-clang -I/Users/adam/Desktop/SK_Dobble/Dobble/Client -I/Users/adam/Qt/5.15.1/clang_64/lib/QtWidgets.framework/Headers -I/Users/adam/Qt/5.15.1/clang_64/lib/QtGui.framework/Headers -I/Users/adam/Qt/5.15.1/clang_64/lib/QtNetwork.framework/Headers -I/Users/adam/Qt/5.15.1/clang_64/lib/QtCore.framework/Headers -I. -I/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include/c++/v1 -I/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/clang/12.0.0/include -I/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX11.1.sdk/usr/include -I/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include -F/Users/adam/Qt/5.15.1/clang_64/lib ../Client/chatwindow.h -o release/moc_chatwindow.cpp
@@ -414,7 +434,12 @@ release/clientmain.o: ../Client/clientmain.cpp ../../../../Qt/5.15.1/clang_64/li
 		../../../../Qt/5.15.1/clang_64/lib/QtWidgets.framework/Headers/QWidget \
 		../../../../Qt/5.15.1/clang_64/lib/QtWidgets.framework/Headers/qwidget.h \
 		../../../../Qt/5.15.1/clang_64/lib/QtNetwork.framework/Headers/QAbstractSocket \
-		../../../../Qt/5.15.1/clang_64/lib/QtNetwork.framework/Headers/qabstractsocket.h
+		../../../../Qt/5.15.1/clang_64/lib/QtNetwork.framework/Headers/qabstractsocket.h \
+		../Client/cards.h \
+		../../../../Qt/5.15.1/clang_64/lib/QtCore.framework/Headers/QObject \
+		../../../../Qt/5.15.1/clang_64/lib/QtCore.framework/Headers/qobject.h \
+		../../../../Qt/5.15.1/clang_64/lib/QtCore.framework/Headers/QVector \
+		../../../../Qt/5.15.1/clang_64/lib/QtCore.framework/Headers/qvector.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o release/clientmain.o ../Client/clientmain.cpp
 
 release/chatwindow.o: ../Client/chatwindow.cpp ../Client/chatwindow.h \
@@ -422,10 +447,13 @@ release/chatwindow.o: ../Client/chatwindow.cpp ../Client/chatwindow.h \
 		../../../../Qt/5.15.1/clang_64/lib/QtWidgets.framework/Headers/qwidget.h \
 		../../../../Qt/5.15.1/clang_64/lib/QtNetwork.framework/Headers/QAbstractSocket \
 		../../../../Qt/5.15.1/clang_64/lib/QtNetwork.framework/Headers/qabstractsocket.h \
-		ui_chatwindow.h \
-		../Client/chatclient.h \
+		../Client/cards.h \
 		../../../../Qt/5.15.1/clang_64/lib/QtCore.framework/Headers/QObject \
 		../../../../Qt/5.15.1/clang_64/lib/QtCore.framework/Headers/qobject.h \
+		../../../../Qt/5.15.1/clang_64/lib/QtCore.framework/Headers/QVector \
+		../../../../Qt/5.15.1/clang_64/lib/QtCore.framework/Headers/qvector.h \
+		ui_chatwindow.h \
+		../Client/chatclient.h \
 		../../../../Qt/5.15.1/clang_64/lib/QtNetwork.framework/Headers/QTcpSocket \
 		../../../../Qt/5.15.1/clang_64/lib/QtNetwork.framework/Headers/qtcpsocket.h \
 		../../../../Qt/5.15.1/clang_64/lib/QtGui.framework/Headers/QStandardItemModel \
@@ -439,7 +467,9 @@ release/chatwindow.o: ../Client/chatwindow.cpp ../Client/chatwindow.h \
 		../../../../Qt/5.15.1/clang_64/lib/QtCore.framework/Headers/QJsonObject \
 		../../../../Qt/5.15.1/clang_64/lib/QtCore.framework/Headers/qjsonobject.h \
 		../../../../Qt/5.15.1/clang_64/lib/QtCore.framework/Headers/QDebug \
-		../../../../Qt/5.15.1/clang_64/lib/QtCore.framework/Headers/qdebug.h
+		../../../../Qt/5.15.1/clang_64/lib/QtCore.framework/Headers/qdebug.h \
+		../../../../Qt/5.15.1/clang_64/lib/QtCore.framework/Headers/QTimer \
+		../../../../Qt/5.15.1/clang_64/lib/QtCore.framework/Headers/qtimer.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o release/chatwindow.o ../Client/chatwindow.cpp
 
 release/chatclient.o: ../Client/chatclient.cpp ../Client/chatclient.h \
@@ -455,8 +485,20 @@ release/chatclient.o: ../Client/chatclient.cpp ../Client/chatclient.h \
 		../../../../Qt/5.15.1/clang_64/lib/QtCore.framework/Headers/QJsonObject \
 		../../../../Qt/5.15.1/clang_64/lib/QtCore.framework/Headers/qjsonobject.h \
 		../../../../Qt/5.15.1/clang_64/lib/QtCore.framework/Headers/QJsonValue \
-		../../../../Qt/5.15.1/clang_64/lib/QtCore.framework/Headers/qjsonvalue.h
+		../../../../Qt/5.15.1/clang_64/lib/QtCore.framework/Headers/qjsonvalue.h \
+		../../../../Qt/5.15.1/clang_64/lib/QtCore.framework/Headers/qeventloop.h \
+		../../../../Qt/5.15.1/clang_64/lib/QtCore.framework/Headers/qtimer.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o release/chatclient.o ../Client/chatclient.cpp
+
+release/cards.o: ../Client/cards.cpp ../Client/cards.h \
+		../../../../Qt/5.15.1/clang_64/lib/QtCore.framework/Headers/QObject \
+		../../../../Qt/5.15.1/clang_64/lib/QtCore.framework/Headers/qobject.h \
+		../../../../Qt/5.15.1/clang_64/lib/QtCore.framework/Headers/QVector \
+		../../../../Qt/5.15.1/clang_64/lib/QtCore.framework/Headers/qvector.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o release/cards.o ../Client/cards.cpp
+
+release/moc_cards.o: release/moc_cards.cpp 
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o release/moc_cards.o release/moc_cards.cpp
 
 release/moc_chatwindow.o: release/moc_chatwindow.cpp 
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o release/moc_chatwindow.o release/moc_chatwindow.cpp

@@ -115,11 +115,7 @@ void ChatClient::onReadyRead()
     {
         data = m_clientSocket->readAll();
 
-        QStringList messages = data.split('.');
-
-        for (int i=0; i<messages.size(); i++) {
-            messageType(messages[i]);
-        }
+        messageType(data);
 
         QEventLoop loop;
         QTimer::singleShot(100, &loop, SLOT(quit()));

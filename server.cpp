@@ -93,8 +93,8 @@ struct Game {
 } game;
 
 void broadcast(char message[30]) {
-    for (int i = 0; i < MAX_CLIENTS; i++)
-    {
+    strcat(message, ".");
+    for (int i = 0; i < MAX_CLIENTS; i++) {
         if ( players[i].socket != 0 ) {
             if ( (unsigned)send(players[i].socket, message, strlen(message), 0) != strlen(message) ) {
                 perror("send");
@@ -112,6 +112,7 @@ void sendCard(int i) {
     char c[10];
     sprintf(c, "%d", game.cardOnBoard);
     strcat(countDownFinished, c);
+    strcat(countDownFinished, ".");
 
     printf("%s\n", countDownFinished);
 
@@ -122,14 +123,8 @@ void sendCard(int i) {
 
 void countDownFinished() {
     if (game.numberOfPlayers < 2) {
-        for (int i = 0; i < MAX_CLIENTS; i++) {
-            if ( players[i].socket != 0 ) {
-                char countDownFinished[30] = "countDownFinished,0;0;0";
-                if( (unsigned)send(players[i].socket, countDownFinished, strlen(countDownFinished), 0) != strlen(countDownFinished) ) {
-                    perror("send");
-                }
-            }
-        }
+        char countDownFinished[30] = "countDownFinished,0;0;0";
+        broadcast(countDownFinished);
         return;
     }
     for (int i = 0; i < MAX_CLIENTS; i++) {
@@ -155,13 +150,7 @@ void playerCount(int numberOfPlayers) {
             strcat(playerCount, c);
         }
     }
-    for (int i = 0; i < MAX_CLIENTS; i++) {
-        if ( players[i].socket != 0 ) {
-            if( (unsigned)send(players[i].socket, playerCount, strlen(playerCount), 0) != strlen(playerCount) ) {
-                perror("send");
-            }
-        }
-    }
+    broadcast(playerCount);
 }
 
 void* timer(void *vargp) {
@@ -204,13 +193,12 @@ void check(int i, int max_clients, char *message) {
     players[i].cardOnHand = game.stash[game.cardIterator];
     game.cardIterator++;
     countDownFinished();
-    sleep(1);
+    playerCount(game.numberOfPlayers);
     if (players[i].points != 0) {
-        playerCount(game.numberOfPlayers);
         return;
     }
     printf("%s has won\n", players[i].username);
-    char finish[30] = "finish,1;0";
+    char finish[30] = "finish,1;0.";
     if ( (unsigned)send( players[i].socket, finish, strlen(finish), 0) != strlen(finish) ) {
         perror("send");
     }
@@ -218,6 +206,7 @@ void check(int i, int max_clients, char *message) {
         if ( players[k].socket != 0 && players[i].socket != players[k].socket ) {
             char finish[30] = "finish,0;";
             strcat(finish, players[i].username);
+            strcat(finish, ".");
             if ( (unsigned)send( players[k].socket, finish, strlen(finish), 0) != strlen(finish) ) {
                 perror("send");
             }
@@ -362,9 +351,9 @@ int main(int argc , char *argv[])
             char *ptr = strtok(buffer, ",");
             ptr = strtok(NULL, ",");
             char *username = ptr;
-            if ( game.numberOfPlayers == 7 ) {
+            if ( game.numberOfPlayers == 8 ) {
                 printf("Too many users\n");
-                char limit[30] = "limit,";
+                char limit[30] = "limit.";
                 if ( (unsigned)send(new_socket, limit, strlen(limit), 0) != strlen(limit) ) {
                     perror("send");
                 }
@@ -373,7 +362,7 @@ int main(int argc , char *argv[])
             for (i = 0; i < max_clients; i++) {
                 if ( players[i].socket != 0 && strcmp(username, players[i].username ) == 0 ) {
                     printf("User tried to log in with duplicate username\n");
-                    char duplicate[30] = "duplicate,";
+                    char duplicate[30] = "duplicate.";
                     if ( (unsigned)send(new_socket, duplicate, strlen(duplicate), 0) != strlen(duplicate) ) {
                         perror("send");
                     }
@@ -381,9 +370,7 @@ int main(int argc , char *argv[])
                 }
             }
             
-            //TODO: sleeps situation (\0)
-            
-            char loginSuccess[30] = "loginSuccess";
+            char loginSuccess[30] = "loginSuccess.";
             //send new connection greeting message
             if( (unsigned)send(new_socket, loginSuccess, strlen(loginSuccess), 0) != strlen(loginSuccess) )
             {
@@ -414,15 +401,12 @@ int main(int argc , char *argv[])
                             }
                         }
                         players[i].points = max;
-                        sleep(1);
                         sendCard(i);
                     } else {
                         players[i].points = 7;
                     }
                     printf("Adding to list of sockets as %d,\n   username: %s\n   points: %d\n   cardOnHand: %d\n   clientNr: %d\n" , i, players[i].username, players[i].points, players[i].cardOnHand, game.numberOfPlayers);
-                    sleep(1);
                     playerCount(game.numberOfPlayers);
-                    sleep(1);
                     if (game.numberOfPlayers == 2) {
                         game.timer = 10;
                         game.on = FALSE;
