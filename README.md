@@ -23,7 +23,7 @@ Gra trwa do momentu aż wszystkie osoby poza ostatnią pozbędą się swoich kar
 
 # Budowanie projektu
 
-1. Stworz katalog build i zbuduj w nim projekt:
+1. Stworz katalog build i zbuduj w nim projekt:\n
   1.1. mkdir build
   1.2. cd build
   1.3. cmake ..
