@@ -23,11 +23,18 @@ Gra trwa do momentu aż wszystkie osoby poza ostatnią pozbędą się swoich kar
 
 # Budowanie projektu
 
-1. Stworz katalog build i zbuduj w nim projekt:\n
+1. Stworz katalog build i zbuduj w nim projekt:
+
   1.1. mkdir build
+  
   1.2. cd build
+  
   1.3. cmake ..
+  
   1.4. make
+  
 2. Program klienta jest w katalogu Dobble, serwer w katalogu Server
+
   1.1. cd Dobble && ./client
+  
   1.2. cd Server && ./server
