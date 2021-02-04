@@ -1,5 +1,5 @@
 # SK_Dobble
-=============================Gra na spostrzegawczość przez sieć===========================
+===============Gra na spostrzegawczość przez sieć===============
 
 Opis:
 
@@ -19,3 +19,15 @@ Karta gracza, który jako pierwszy poprawnie wskaże wspólny element ląduje na
 Na górze ekranu gry wyświetlane są punkty wszystkich graczy aktualizowane na bieżąco. Za poprawne wskazanie karty jako pierwszy, gracz dostaje jeden punkt. Jeżeli dwóch lub więcej graczy dokładnie w tym samym momencie wskaże poprawny element, wszyscy dostają po jednym punkcie, a na wspólny stos trafia losowa karta z ich kart. 
 
 Gra trwa do momentu aż wszystkie osoby poza ostatnią pozbędą się swoich kart.
+
+
+# Budowanie projektu
+
+1. Stworz katalog build i zbuduj w nim projekt:
+  1.1. mkdir build
+  1.2. cd build
+  1.3. cmake ..
+  1.4. make
+2. Program klienta jest w katalogu Dobble, serwer w katalogu Server
+  1.1. cd Dobble && ./client
+  1.2. cd Server && ./server
