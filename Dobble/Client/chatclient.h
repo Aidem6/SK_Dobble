@@ -32,6 +32,7 @@ signals:
     void countDown(const int &timer);
     void countDownFinished(const bool &success, const int &card, const int &boardCard);
     void loginDuplicate();
+    void userLimit();
     void finishRound(const int isWin, const QString &username);
     void userLeft(const QString &username);
 private:

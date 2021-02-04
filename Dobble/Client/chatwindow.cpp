@@ -41,6 +41,7 @@ ChatWindow::ChatWindow(QWidget *parent)
     connect(m_chatClient, &ChatClient::countDownFinished, this, &ChatWindow::countDownFinished);
     connect(m_chatClient, &ChatClient::loginDuplicate, this, &ChatWindow::loginDuplicate);
     connect(m_chatClient, &ChatClient::finishRound, this, &ChatWindow::finishRound);
+    connect(m_chatClient, &ChatClient::userLimit, this, &ChatWindow::userLimit);
     connect(m_chatClient, &ChatClient::userLeft, this, &ChatWindow::userLeft);
 
     connect(ui->connectButton, &QPushButton::clicked, this, &ChatWindow::attemptConnection);
@@ -233,19 +234,14 @@ void ChatWindow::playerCount(const int &n, const QJsonObject &players)
 
     if (n == 1)
     {
-        if(ui->buttonA->text() == "A")
+        if(ui->buttonA->text() == "A" || ui->buttonA->text() == "")
             ui->startButton->setEnabled(true);
     }
 }
 
 void ChatWindow::countDown(const int &timer)
 {
-    if (timer <= 60) {
-        ui->countDown->setText("Game will begin in " + QString::number(timer) + " seconds or when host will press start");
-    }
-    else {
-        ui->countDown->setText("Too few players to start");
-    }
+    ui->countDown->setText("Game will begin in " + QString::number(timer) + " seconds or when host will press start");
 }
 
 void ChatWindow::countDownFinished(const bool &success, const int &card, const int &boardCard)
@@ -281,13 +277,19 @@ void ChatWindow::countDownFinished(const bool &success, const int &card, const i
     }
     else
     {
-        QMessageBox::warning(this, "Error", "Too few players to start");
+        ui->countDown->setText("Too few players to start");
     }
 }
 
 void ChatWindow::loginDuplicate()
 {
     QMessageBox::warning(this, "Error", "Duplicate username");
+}
+
+void ChatWindow::userLimit()
+{
+    qDebug() << "too many players";
+    QMessageBox::warning(this, "Error", "Too many players");
 }
 
 void ChatWindow::finishRound(const int isWin, const QString &username)

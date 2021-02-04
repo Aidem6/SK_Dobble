@@ -91,6 +91,10 @@ void ChatClient::messageType(const QString &data)
         QStringList arg = list[1].split(';');
         emit finishRound(arg[0].toInt(), arg[1]);
     }
+    else if (list[0].compare(QLatin1String("limit"), Qt::CaseInsensitive) == 0) {
+        emit userLimit();
+        disconnectFromHost();
+    }
 }
 
 void ChatClient::connectToServer(const QHostAddress &address, quint16 port)
