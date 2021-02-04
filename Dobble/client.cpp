@@ -59,14 +59,11 @@ void Client::disconnectFromHost()
 void Client::messageType(const QString &data)
 {
 //    qDebug() << data;
-//    emit messageReceived(data);
     QStringList list = data.split(',');
     if (list[0].compare(QLatin1String("loginSuccess"), Qt::CaseInsensitive) == 0) {
         emit loggedIn();
     } else if (list[0].compare(QLatin1String("countDown"), Qt::CaseInsensitive) == 0) {
         emit countDown(list[1].toInt());
-    } else if (list[0].compare(QLatin1String("message"), Qt::CaseInsensitive) == 0) {
-//        emit messageReceived(list[1]);
     } else if (list[0].compare(QLatin1String("playerCount"), Qt::CaseInsensitive) == 0) {
         QStringList playersList = list[1].split(';');
         QJsonObject players;
