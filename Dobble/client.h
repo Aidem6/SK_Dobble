@@ -30,6 +30,7 @@ signals:
     void countDownFinished(const bool &success, const int &card, const int &boardCard);
     void loginDuplicate();
     void userLimit();
+    void block(const int &block);
     void finishRound(const int isWin, const QString &username);
 private:
     QTcpSocket *m_clientSocket;

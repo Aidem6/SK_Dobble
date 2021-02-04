@@ -91,6 +91,7 @@ struct Game {
     int cardOnBoard;
     int cardIterator;
     int stash[57];
+    int usersBlocked;
 } game;
 
 void broadcast(char message[30]) {
@@ -217,6 +218,16 @@ void resetPoints() {
 
 void check(int i, int max_clients, char *message) {
     if (!numInCard(cards[players[i].cardOnHand][atoi(message)])) {
+        if (++game.usersBlocked < game.numberOfPlayers) {
+            char block[30] = "block,1.";
+            if( (unsigned)send(players[i].socket, block, strlen(block), 0) != strlen(block) ) {
+                perror("send");
+            }
+        } else {
+            char block[30] = "block,0";
+            broadcast(block);
+            game.usersBlocked = 0;
+        }
         return;
     }
     players[i].points--;
@@ -262,6 +273,7 @@ int main(int argc , char *argv[])
     game.nextRoundTimerOn = FALSE;
     game.cardOnBoard = 0;
     game.cardIterator = 1;
+    game.usersBlocked = 0;
 
     for (int i=0; i<57; i++) {
         game.stash[i] = i;

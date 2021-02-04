@@ -75,22 +75,20 @@ void Client::messageType(const QString &data)
             players[QStringLiteral("points")+QString::number(i)] = QString(playersList[k]);
         }
         emit playerCount(n, players);
-    }
-    else if (list[0].compare(QLatin1String("countDownFinished"), Qt::CaseInsensitive) == 0) {
+    } else if (list[0].compare(QLatin1String("countDownFinished"), Qt::CaseInsensitive) == 0) {
         QStringList cardsList = list[1].split(';');
         emit countDownFinished(cardsList[0].toInt(), cardsList[1].toInt(), cardsList[2].toInt());
-    }
-    else if (list[0].compare(QLatin1String("duplicate"), Qt::CaseInsensitive) == 0) {
+    } else if (list[0].compare(QLatin1String("duplicate"), Qt::CaseInsensitive) == 0) {
         emit loginDuplicate();
         disconnectFromHost();
-    }
-    else if (list[0].compare(QLatin1String("finish"), Qt::CaseInsensitive) == 0) {
+    } else if (list[0].compare(QLatin1String("finish"), Qt::CaseInsensitive) == 0) {
         QStringList arg = list[1].split(';');
         emit finishRound(arg[0].toInt(), arg[1]);
-    }
-    else if (list[0].compare(QLatin1String("limit"), Qt::CaseInsensitive) == 0) {
+    } else if (list[0].compare(QLatin1String("limit"), Qt::CaseInsensitive) == 0) {
         emit userLimit();
         disconnectFromHost();
+    } else if (list[0].compare(QLatin1String("block"), Qt::CaseInsensitive) == 0) {
+        emit block(list[1].toInt());
     }
 }
 
@@ -112,7 +110,7 @@ void Client::onReadyRead()
     {
         data = m_clientSocket->readAll();
 
-        qDebug()<<data;
+//        qDebug()<<data;
 
         QStringList messages = data.split('.');
         for (int i=0; i<messages.size(); i++) {

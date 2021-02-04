@@ -36,6 +36,7 @@ Window::Window(QWidget *parent)
     connect(m_Client, &Client::loginDuplicate, this, &Window::loginDuplicate);
     connect(m_Client, &Client::finishRound, this, &Window::finishRound);
     connect(m_Client, &Client::userLimit, this, &Window::userLimit);
+    connect(m_Client, &Client::block, this, &Window::block);
 
     connect(ui->connectButton, &QPushButton::clicked, this, &Window::attemptConnection);
     connect(ui->startButton, &QPushButton::clicked, this, &Window::startGame);
@@ -257,6 +258,29 @@ void Window::userLimit()
 {
     qDebug() << "too many players";
     QMessageBox::warning(this, "Error", "Too many players");
+}
+
+void Window::block(const int &block)
+{
+    if (block) {
+        ui->buttonA->setEnabled(false);
+        ui->buttonB->setEnabled(false);
+        ui->buttonC->setEnabled(false);
+        ui->buttonD->setEnabled(false);
+        ui->buttonE->setEnabled(false);
+        ui->buttonF->setEnabled(false);
+        ui->buttonG->setEnabled(false);
+        ui->buttonH->setEnabled(false);
+    } else {
+        ui->buttonA->setEnabled(true);
+        ui->buttonB->setEnabled(true);
+        ui->buttonC->setEnabled(true);
+        ui->buttonD->setEnabled(true);
+        ui->buttonE->setEnabled(true);
+        ui->buttonF->setEnabled(true);
+        ui->buttonG->setEnabled(true);
+        ui->buttonH->setEnabled(true);
+    }
 }
 
 void Window::finishRound(const int isWin, const QString &username)
